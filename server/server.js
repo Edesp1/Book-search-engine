@@ -6,19 +6,17 @@ const routes = require('./routes');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Middleware to parse JSON and URL-encoded data
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Serve static files from the Vite build
+// Serve static files from the client directory
 app.use(express.static(path.join(__dirname, '../client/dist')));
 
-// Use API routes
-app.use('/api', (req, res, next) => {
-  console.log('API route hit:', req.url);
-  next();
-}, routes);
+// Use routes from the routes directory
+app.use(routes);
 
-// The "catchall" handler: for any request that doesn't match one above, send back Vite's index.html file.
+// Serve up React front-end in production
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });
