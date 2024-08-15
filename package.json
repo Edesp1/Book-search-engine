@@ -1,6 +1,19 @@
 {
+  "name": "server",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server/server.js", 
+    "watch": "nodemon server/server.js"
+  },
   "dependencies": {
     "apollo-server-express": "^3.13.0",
-    "graphql": "^16.9.0"
+    "bcrypt": "^4.0.1",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^8.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.3"
   }
 }
