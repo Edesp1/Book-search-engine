@@ -1,28 +1,48 @@
-import ReactDOM from 'react-dom/client'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import 'bootstrap/dist/css/bootstrap.min.css'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  createHttpLink,
+} from '@apollo/client';
+import { setContext } from '@apollo/client/link/context';
+import App from './App'; // Import App from App.jsx
 
-import App from './App.jsx'
-import SearchBooks from './pages/SearchBooks'
-import SavedBooks from './pages/SavedBooks'
+const httpLink = createHttpLink({
+  uri: '/graphql',
+});
 
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <App />,
-    errorElement: <h1 className='display-2'>Wrong page!</h1>,
-    children: [
-      {
-        index: true,
-        element: <SearchBooks />
-      }, {
-        path: '/saved',
-        element: <SavedBooks />
-      }
-    ]
-  }
-])
+const authLink = setContext((_, { headers }) => {
+  const token = localStorage.getItem('id_token');
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : "",
+    },
+  };
+});
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <RouterProvider router={router} />
-)
+const client = new ApolloClient({
+  link: authLink.concat(httpLink),
+  cache: new InMemoryCache(),
+});
+
+const Main = () => (
+  <ApolloProvider client={client}>
+    <Router>
+      <Routes>
+        <Route path="/" element={<App />} />
+        {/* Add other routes as needed */}
+      </Routes>
+    </Router>
+  </ApolloProvider>
+);
+
+ReactDOM.render(
+  <React.StrictMode>
+    <Main />
+  </React.StrictMode>,
+  document.getElementById('root')
+);
