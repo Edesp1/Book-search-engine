@@ -8,13 +8,13 @@ router.post('/signup', userController.createUser);
 // Login route
 router.post('/login', userController.login);
 
-// Get a single user by ID or username (adjust if needed)
+// Get a single user
 router.get('/:id', userController.getSingleUser);
 
-// Save a book (make sure you handle this correctly on the front-end)
+// Save a book
 router.post('/saveBook', userController.saveBook);
 
-// Delete a book (adjust endpoint if necessary)
+// Delete a book
 router.delete('/deleteBook/:bookId', userController.deleteBook);
 
 module.exports = router;

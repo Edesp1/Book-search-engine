@@ -1,22 +1,25 @@
 import './App.css';
 import { Outlet } from 'react-router-dom';
-import { ApolloClient, ApolloProvider, InMemoryCache, ApolloLink, createHttpLink} from "@apollo/client";
-import {setContext} from "@apollo/client/link/context";
+import { ApolloClient, ApolloProvider, InMemoryCache, ApolloLink, createHttpLink } from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
+import { onError } from '@apollo/client/link/error';
 import Navbar from './components/Navbar';
 
-const backendLink=createHttpLink({uri:"/graphql"});
-const auth = setContext((__, {headers})=> {
-  const token = localStorage.getItem("id_token")
+// Create HTTP Link
+const backendLink = createHttpLink({ uri: "/graphql" });
+
+// Create Auth Link
+const authLink = setContext((_, { headers }) => {
+  const token = localStorage.getItem("id_token");
   return {
     headers: {
-      ...headers, 
-      authorization: token? `Bearer ${token}`: "",
+      ...headers,
+      authorization: token ? `Bearer ${token}` : "",
     }
-  }
+  };
 });
 
-import { onError } from '@apollo/client/link/error';
-
+// Create Error Link
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
     graphQLErrors.forEach(({ message, locations, path }) => {
@@ -30,17 +33,17 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   }
 });
 
+// Initialize Apollo Client
 const client = new ApolloClient({
-  link: ApolloLink.from([errorLink, auth.concat(backendLink)]),
-  uri: "/graphql",
+  link: ApolloLink.from([errorLink, authLink.concat(backendLink)]),
   cache: new InMemoryCache(),
 });
+
 function App() {
-  
   return (
-    //set up context, share resources, components have access to webtoken
     <ApolloProvider client={client}>
       <Navbar />
+      <div>App Component Loaded</div> {/* Simple message to verify rendering */}
       <Outlet />
     </ApolloProvider>
   );

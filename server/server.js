@@ -1,9 +1,11 @@
 const express = require('express');
 const path = require('path');
+const cors = require('cors'); // Import the cors package
 const { ApolloServer } = require('@apollo/server');
 const { expressMiddleware } = require('@apollo/server/express4');
-const { authMiddleware } = require('./utils/auth');
 const { typeDefs, resolvers } = require('./schemas');
+const { authMiddleware } = require('./utils/auth');
+const userRoutes = require('./routes/api/user-routes');
 const db = require('./config/connection');
 
 const app = express();
@@ -12,6 +14,9 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
 });
+
+// Apply CORS middleware
+app.use(cors());
 
 const startApolloServer = async () => {
   await server.start();
@@ -27,17 +32,14 @@ const startApolloServer = async () => {
   // Serve static assets and handle routing based on environment
   if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, '../client/dist')));
-
-    // Serve index.html from 'dist' as the fallback route
     app.get('*', (req, res) => {
       res.sendFile(path.join(__dirname, '../client/dist/index.html'));
     });
   } else {
-    app.use(express.static(path.join(__dirname, '../client')));
-
-    // Serve index.html from 'client' for all routes in development
+    app.use(express.static(path.join(__dirname, '../client/dist')));
+    app.use('/api/users', userRoutes); // Ensure the prefix is applied
     app.get('*', (req, res) => {
-      res.sendFile(path.join(__dirname, '../client/index.html'));
+      res.sendFile(path.join(__dirname, '../client/dist/index.html'));
     });
   }
 

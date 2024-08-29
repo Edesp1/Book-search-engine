@@ -22,12 +22,12 @@ module.exports = {
       console.log('Request body:', body);
       const user = await User.create(body);
       console.log('Created user:', user);
-      
+  
       const token = signToken(user);
       res.status(200).json({ token, user });
     } catch (err) {
-      console.error('Error in createUser:', err);
-      res.status(500).json({ message: 'Something went wrong!' });
+      console.error('Error in createUser:', err.message); // Log error message
+      res.status(500).json({ message: 'Something went wrong!', error: err.message });
     }
   },
   // login a user, sign a token, and send it back (to client/src/components/LoginForm.js)

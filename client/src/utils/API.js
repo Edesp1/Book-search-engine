@@ -19,9 +19,8 @@ export const getMe = async (token) => {
   }
 };
 
-export const createUser = async (userData) => {
+export async function createUser(userData) {
   try {
-    console.log('Sending user data:', userData);
     const response = await fetch('/api/users/signup', {
       method: 'POST',
       headers: {
@@ -29,12 +28,10 @@ export const createUser = async (userData) => {
       },
       body: JSON.stringify(userData),
     });
-
     if (!response.ok) {
-      throw new Error('Failed to create user');
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-
-    return response.json();
+    return await response.json();
   } catch (error) {
     console.error('Error creating user:', error);
     throw error;

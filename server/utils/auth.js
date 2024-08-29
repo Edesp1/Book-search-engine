@@ -18,7 +18,7 @@ module.exports = {
     let token = req.query.token || req.headers.authorization || req.body.token;
 
     if (req.headers.authorization) {
-      token = token.split(' ').pop().trim();
+      token = token.split(' ').pop().trim(); // Extract token from Bearer scheme
     }
 
     if (!token) {
@@ -27,7 +27,7 @@ module.exports = {
 
     try {
       // Verify token and get user data out of it
-      const { data } = jwt.verify(token, secret, { maxAge: expiration });
+      const { data } = jwt.verify(token, secret); // Use `expiresIn` in sign
       return { user: data }; // Return user data in context
     } catch (err) {
       console.log('Invalid token', err);
@@ -39,4 +39,4 @@ module.exports = {
     const payload = { username, email, _id };
     return jwt.sign({ data: payload }, secret, { expiresIn: expiration });
   },
-}
+};
